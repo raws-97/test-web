@@ -1,0 +1,132 @@
+<div class="container-scroller">
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+      <div class="content-wrapper d-flex align-items-center auth">
+        <div class="row flex-grow">
+          <div class="col-lg-10 mx-auto">
+            <div class="auth-form-light text-left p-5">
+              <div class="brand-logo">
+                <img src="https://www.pinhome.id/berita-properti/content/images/2020/04/Pinhome.id-Landscape-Logo.png">
+              </div>
+              <h4>Register new Developer Account</h4>
+              <form id="register-form">
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-lg" id="devName" placeholder="Developer Name" style="text-transform:uppercase">
+                  </div>
+                <div class="form-group">
+                  <input type="email" class="form-control form-control-lg" id="emailReg" placeholder="Email">
+                </div>
+                <div class="form-group">
+                  <select class="form-control form-control-lg" id="subType">
+                    <option disabled>Subscription Type</option>
+                    <option>Transaction Details</option>
+                    <option>Unit Details</option>
+                    <option>Transaction & Unit Details</option>
+                    <option>Admin</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                    <input type="date" class="form-control form-control-lg" id="startDate" placeholder="Start Date">
+                  </div>
+                </form>
+                <div class="mt-3">
+                  <button class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn" id="signUp">SIGN UP</button>
+                </div> <br>
+                <center>
+                  <div class="spinner-border text-primary" style="display:none;" role="status">
+                  <span class="sr-only">Loading...</span>
+              </div>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- content-wrapper ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <script>
+    const url = "https://script.google.com/a/pinhome.id/macros/s/AKfycbx1Pal6dF2SDRWSysX9aeXqak4nAoe-G2zg13_FeTC0vDjENgI/exec";
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString).get('sessionToken');
+    $("#signUp").click(function(){
+    $(".spinner-border").show();
+
+    var length = 12,
+    charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+    resVal = "";
+
+    for(var i=0, n = charset.length; i < length; ++i){
+      resVal += charset.charAt(Math.floor(Math.random() * n));
+    }
+
+    var emailReg = $("#emailReg").val();
+    var pass =  CryptoJS.SHA256(resVal).toString();
+    var passBc = resVal;
+    var devName = $("#devName").val();
+    var subsType = $("#subType").val();
+    var startDate = $("#startDate").val();
+    var token = emailReg + pass;
+
+    var rData = {};
+
+    rData.devName = devName;
+    rData.email = emailReg;
+    rData.pass = pass;
+    rData.passBc = passBc;
+    rData.subsType = subsType
+    rData.startDate = startDate;
+    rData.loginTokenReg = token;
+
+    if(devName.length <1 || emailReg.length <1 || startDate.length <1){
+      Swal.fire({
+            icon: 'warning',
+            title: 'All field must filled.',
+            showConfirmButton: false,
+            timer: 1500
+        });
+        $(".spinner-border").hide();
+    } else {
+      if(urlParams != null){
+                fetch(url+"?form=register_new_account",{
+                    method: 'POST',
+                    cache: 'no-cache',
+                    credentials: 'omit',
+                    redirect: 'follow',
+                    body: JSON.stringify(rData)
+                })
+                .then(d => d.json())
+                .then(d => {
+                    if(d){
+                      Swal.fire({
+                        icon: 'success',
+                        title: 'Registered',
+                        text: 'Success Register new Developer!',
+                      });
+                      $(".spinner-border").hide();
+                       $('#register-form').trigger("reset");
+                    } else{
+                      Swal.fire({
+                        icon: 'error',
+                        title: 'Oopss..',
+                        text: 'Email already registered!',
+                      });
+                      $(".spinner-border").hide();
+
+                    }
+                });
+            } else {
+                window.open("login.html","_top");
+            }
+
+
+
+  }
+
+    
+
+    
+    
+
+    });
+  </script>
